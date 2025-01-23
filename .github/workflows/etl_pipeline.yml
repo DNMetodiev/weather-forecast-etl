@@ -1,0 +1,36 @@
+name: Weather Forecast ETL Automation
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # Run daily at midnight UTC
+  workflow_dispatch: 
+
+jobs:
+  run-etl:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Check out the code
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Step 2: Set up Python
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.9"
+
+    # Step 3: Install dependencies
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    # Step 4: Set environment variables from GitHub Secrets
+    - name: Set environment variables
+      env:
+        OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+        POSTGRES_DB_URL: ${{ secrets.POSTGRES_DB_URL }}
+      run: echo "Environment variables set."
+
+    # Step 5: Run the ETL pipeline
+    - name: Run the ETL pipeline
+      run: python weather_forecast_etl.py
