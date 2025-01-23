@@ -31,6 +31,6 @@ jobs:
         POSTGRES_DB_URL: ${{ secrets.POSTGRES_DB_URL }}
       run: echo "Environment variables set."
 
-    # Step 5: Run the ETL pipeline
+    # Step 5: Run the ETL pipeline 
     - name: Run the ETL pipeline
-      run: python weather_forecast_etl.py
+      run: python etl/weather_forecast_etl.py
