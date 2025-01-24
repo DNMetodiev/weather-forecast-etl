@@ -3,6 +3,8 @@ import pandas as pd
 from sqlalchemy import create_engine
 import os
 from dotenv import load_dotenv
+import matplotlib.pyplot as plt
+import plotly.express as px
 
 # Load the .env file
 load_dotenv()
@@ -53,6 +55,37 @@ def load_to_postgres(dataframe, table_name="weather_forecasts"):
     dataframe.to_sql(table_name, engine, if_exists="append", index=False)
     print(f"Data loaded into table '{table_name}'")
 
+def visualize_weather_data(dataframe):
+    """
+    Creates visualizations for the weather data.
+    """
+    # Line chart: Temperature trends over time for each city
+    plt.figure(figsize=(12, 6))
+    for city in dataframe['city'].unique():
+        city_data = dataframe[dataframe['city'] == city]
+        plt.plot(city_data['date'], city_data['temperature'], label=city)
+    plt.title("Temperature Trends Over Time")
+    plt.xlabel("Date")
+    plt.ylabel("Temperature (°C)")
+    plt.legend()
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig("temperature_trends.png")  # Save the chart as an image
+    plt.show()
+
+    # Scatter plot: Temperature vs. Humidity
+    fig = px.scatter(
+        dataframe,
+        x="temperature",
+        y="humidity",
+        color="city",
+        title="Temperature vs Humidity",
+        labels={"temperature": "Temperature (°C)", "humidity": "Humidity (%)"},
+        template="plotly"
+    )
+    fig.write_html("temperature_vs_humidity.html")  # Save as an interactive HTML file
+    fig.show()
+
 if __name__ == "__main__":
     cities = ["London", "Paris", "New York", "Tokyo", "Mumbai"]
     all_forecasts = pd.DataFrame()
@@ -67,4 +100,8 @@ if __name__ == "__main__":
     print("Final Processed Data:")
     print(all_forecasts)
 
+    # Save data to PostgreSQL
     load_to_postgres(all_forecasts)
+
+    # Visualize the data
+    visualize_weather_data(all_forecasts)
