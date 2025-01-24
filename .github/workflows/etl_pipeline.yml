@@ -26,10 +26,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    # Step 4: Load environment variables from .env file
-    - name: Load .env file
-      run: |
-        export $(cat .env | xargs)
+    # Step 4: Copy .env file
+    - name: Copy .env file
+      run: cp .env /home/runner/work/weather-forecast-etl/.env
 
     # Step 5: Run the ETL pipeline
     - name: Run the ETL pipeline
